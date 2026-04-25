@@ -24,6 +24,13 @@ import * as prism from 'prism-media';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream';
 
+import vosk from 'vosk';
+import fs from 'fs';
+
+vosk.setLogLevel(0);
+
+const model = new vosk.Model('./vosk-model-small-ru-0.22');
+
 
 const client = new Client({
   intents: [
@@ -148,6 +155,19 @@ const decoder = new prism.opus.Decoder({
     }
 
     console.log('Voice saved:', fileName);
+    const buffer = fs.readFileSync(fileName);
+
+const recognizer = new vosk.Recognizer({
+  model: model,
+  sampleRate: 48000
+});
+
+recognizer.acceptWaveform(buffer);
+
+const result = recognizer.finalResult();
+const text = JSON.parse(result).text;
+
+console.log('Ты сказал:', text);
   });
 
   return;

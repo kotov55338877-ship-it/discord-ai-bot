@@ -1,4 +1,4 @@
-import fetch from 'node-fetch';
+import gTTS from 'gtts';
 import fs from 'fs';
 
 import { 
@@ -7,8 +7,6 @@ import {
   createAudioPlayer,
   createAudioResource
 } from '@discordjs/voice';
-
-import { spawn } from 'child_process';
 
 import 'dotenv/config';
 import {
@@ -58,43 +56,25 @@ client.on('interactionCreate', async interaction => {
   }
 
   const player = createAudioPlayer();
+const fileName = `voice-${Date.now()}.mp3`;
 
-  const response = await fetch(
-    'https://api.elevenlabs.io/v1/text-to-speech/pNInz6obpgDQGcFmaJgB',
-    {
-      method: 'POST',
-      headers: {
-        'xi-api-key': process.env.ELEVEN_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        text: text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: {
-          stability: 0.3,
-          similarity_boost: 0.8
-        }
-      })
-    }
-  );
+const gtts = new gTTS(text, 'ru');
 
-  if (!response.ok) {
-  const errorText = await response.text();
-  console.log('ElevenLabs error:', response.status, errorText);
-  return await interaction.editReply('Ошибка ElevenLabs. Смотри терминал.');
-}
-
-  const fileName = `voice-${Date.now()}.mp3`;
-  const buffer = Buffer.from(await response.arrayBuffer());
-  fs.writeFileSync(fileName, buffer);
+return gtts.save(fileName, (err) => {
+  if (err) {
+    console.log('gTTS error:', err);
+    interaction.editReply('Ошибка озвучки.');
+    return;
+  }
 
   const resource = createAudioResource(fileName);
+
   player.play(resource);
   connection.subscribe(player);
 
-  await interaction.editReply('Говорю...');
-}
-
+  interaction.editReply('Говорю...');
+});
+  }
   if (interaction.commandName === 'leave') {
     const connection = getVoiceConnection(interaction.guild.id);
 

@@ -1,3 +1,9 @@
+import OpenAI from 'openai';
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY
+});
+
 import gTTS from 'gtts';
 
 import { 
@@ -48,6 +54,12 @@ client.on('interactionCreate', async interaction => {
   }
   if (interaction.commandName === 'say') {
   const text = interaction.options.getString('text');
+  const aiResponse = await openai.responses.create({
+  model: "gpt-4.1-mini",
+  input: text
+});
+
+const answer = aiResponse.output_text;
 
   const connection = getVoiceConnection(interaction.guild.id);
   if (!connection) {
@@ -63,7 +75,7 @@ player.on('error', error => {
 
 const fileName = `voice-${Date.now()}.mp3`;
 
-const gtts = new gTTS(text, 'ru');
+const gtts = new gTTS(answer, 'ru');
 
 gtts.save(fileName, async (err) => {
   if (err) {

@@ -55,8 +55,8 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'say') {
   const text = interaction.options.getString('text');
   const aiResponse = await openai.responses.create({
-  model: "gpt-4.1-mini",
-  input: text
+    model: "gpt-4.1-mini",
+    input: text
 });
 
 const answer = aiResponse.output_text;

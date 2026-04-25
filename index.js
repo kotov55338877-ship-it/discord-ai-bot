@@ -54,7 +54,7 @@ client.on('interactionCreate', async interaction => {
   }
   if (interaction.commandName === 'say') {
   const text = interaction.options.getString('text');
-  
+
   let answer;
 
 try {
@@ -105,6 +105,13 @@ gtts.save(fileName, async (err) => {
 
   await interaction.editReply('Говорю...');
   });
+}
+if (interaction.commandName === 'listen') {
+  return await interaction.editReply('Я начал слушать. Скоро подключим распознавание голоса 🎤');
+}
+
+if (interaction.commandName === 'stoplisten') {
+  return await interaction.editReply('Я перестал слушать.');
 }
 
   if (interaction.commandName === 'leave') {

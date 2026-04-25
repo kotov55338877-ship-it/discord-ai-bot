@@ -132,20 +132,16 @@ if (interaction.commandName === 'listen') {
     }
   });
 
-  const oggStream = new prism.opus.OggLogicalBitstream({
-    opusHead: new prism.opus.OpusHead({
-      channelCount: 1,
-      sampleRate: 48000
-    }),
-    pageSizeControl: {
-      maxPackets: 10
-    }
-  });
+const decoder = new prism.opus.Decoder({
+  rate: 48000,
+  channels: 2,
+  frameSize: 960
+});
 
-  const fileName = `listen-${Date.now()}.ogg`;
+  const fileName = `listen-${Date.now()}.pcm`;
   const out = createWriteStream(fileName);
 
-  pipeline(opusStream, oggStream, out, async (err) => {
+  pipeline(opusStream, decoder, out, async (err) => {
     if (err) {
       console.log('Listen error:', err);
       return;

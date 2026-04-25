@@ -20,7 +20,7 @@ import {
   GatewayIntentBits
 } from 'discord.js';
 
-import prism from 'prism-media';
+import * as prism from 'prism-media';
 import { createWriteStream } from 'fs';
 import { pipeline } from 'stream';
 
@@ -132,7 +132,7 @@ if (interaction.commandName === 'listen') {
 
   const oggStream = new prism.opus.OggLogicalBitstream({
     opusHead: new prism.opus.OpusHead({
-      channelCount: 2,
+      channelCount: 1,
       sampleRate: 48000
     }),
     pageSizeControl: {

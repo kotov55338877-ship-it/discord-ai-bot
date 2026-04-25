@@ -1,7 +1,7 @@
-import OpenAI from 'openai';
+import Groq from "groq-sdk";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
 });
 
 import gTTS from 'gtts';
@@ -54,11 +54,22 @@ client.on('interactionCreate', async interaction => {
   }
   if (interaction.commandName === 'say') {
   const text = interaction.options.getString('text');
-  const aiResponse = await openai.responses.create({
-    model: "gpt-4.1-mini",
-    input: text
-});
+  let answer;
 
+try {
+  const chatCompletion = await groq.chat.completions.create({
+    messages: [
+      { role: "user", content: text }
+    ],
+    model: "llama-3.3-70b-versatile"
+  });
+
+  answer = chatCompletion.choices[0]?.message?.content || "Не знаю что ответить 😅";
+
+} catch (error) {
+  console.log('Groq error:', error);
+  return await interaction.editReply('Ошибка Groq 😢');
+}
 const answer = aiResponse.output_text;
 
   const connection = getVoiceConnection(interaction.guild.id);

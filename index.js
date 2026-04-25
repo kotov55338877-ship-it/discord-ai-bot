@@ -54,6 +54,7 @@ client.on('interactionCreate', async interaction => {
   }
   if (interaction.commandName === 'say') {
   const text = interaction.options.getString('text');
+  
   let answer;
 
 try {
@@ -70,7 +71,6 @@ try {
   console.log('Groq error:', error);
   return await interaction.editReply('Ошибка Groq 😢');
 }
-const answer = aiResponse.output_text;
 
   const connection = getVoiceConnection(interaction.guild.id);
   if (!connection) {

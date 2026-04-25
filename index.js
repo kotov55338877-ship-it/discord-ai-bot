@@ -52,7 +52,9 @@ client.on('interactionCreate', async interaction => {
     joinVoiceChannel({
       channelId: voiceChannel.id,
       guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator
+      adapterCreator: voiceChannel.guild.voiceAdapterCreator,
+      selfDeaf: false, // 🔥 ВАЖНО
+      selfMute: false
     });
 
     await interaction.editReply('Я зашёл в голосовой канал.');

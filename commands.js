@@ -19,6 +19,13 @@ const commands = [
         .setDescription('Что сказать')
         .setRequired(true)
     ),
+    new SlashCommandBuilder()
+  .setName('listen')
+  .setDescription('Бот начинает слушать тебя'),
+
+new SlashCommandBuilder()
+  .setName('stoplisten')
+  .setDescription('Бот перестаёт слушать'),
 ].map(command => command.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);

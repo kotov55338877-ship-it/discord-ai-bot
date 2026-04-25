@@ -10,7 +10,8 @@ import {
   joinVoiceChannel, 
   getVoiceConnection,
   createAudioPlayer,
-  createAudioResource
+  createAudioResource,
+  EndBehaviorType
 } from '@discordjs/voice';
 
 import 'dotenv/config';
@@ -18,6 +19,10 @@ import {
   Client,
   GatewayIntentBits
 } from 'discord.js';
+
+import prism from 'prism-media';
+import { createWriteStream } from 'fs';
+import { pipeline } from 'stream';
 
 
 const client = new Client({
@@ -107,7 +112,47 @@ gtts.save(fileName, async (err) => {
   });
 }
 if (interaction.commandName === 'listen') {
-  return await interaction.editReply('Я начал слушать. Скоро подключим распознавание голоса 🎤');
+  const connection = getVoiceConnection(interaction.guild.id);
+
+  if (!connection) {
+    return await interaction.editReply('Сначала используй /join.');
+  }
+
+  const userId = interaction.user.id;
+  const receiver = connection.receiver;
+
+  await interaction.editReply('Слушаю тебя. Скажи фразу 🎤');
+
+  const opusStream = receiver.subscribe(userId, {
+    end: {
+      behavior: EndBehaviorType.AfterSilence,
+      duration: 1500
+    }
+  });
+
+  const oggStream = new prism.opus.OggLogicalBitstream({
+    opusHead: new prism.opus.OpusHead({
+      channelCount: 2,
+      sampleRate: 48000
+    }),
+    pageSizeControl: {
+      maxPackets: 10
+    }
+  });
+
+  const fileName = `listen-${Date.now()}.ogg`;
+  const out = createWriteStream(fileName);
+
+  pipeline(opusStream, oggStream, out, async (err) => {
+    if (err) {
+      console.log('Listen error:', err);
+      return;
+    }
+
+    console.log('Voice saved:', fileName);
+  });
+
+  return;
 }
 
 if (interaction.commandName === 'stoplisten') {

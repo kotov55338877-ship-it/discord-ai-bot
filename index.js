@@ -1,5 +1,4 @@
 import gTTS from 'gtts';
-import fs from 'fs';
 
 import { 
   joinVoiceChannel, 
@@ -56,24 +55,36 @@ client.on('interactionCreate', async interaction => {
   }
 
   const player = createAudioPlayer();
+
+const player = createAudioPlayer();
+
+player.on('error', error => {
+  console.log('Player error:', error);
+});
+
+
 const fileName = `voice-${Date.now()}.mp3`;
 
 const gtts = new gTTS(text, 'ru');
 
-return gtts.save(fileName, (err) => {
+gtts.save(fileName, async (err) => {
   if (err) {
     console.log('gTTS error:', err);
-    interaction.editReply('Ошибка озвучки.');
-    return;
+    return await interaction.editReply('Ошибка озвучки.');
   }
 
-  const resource = createAudioResource(fileName);
+  const resource = createAudioResource(fileName, {
+    inlineVolume: true
+  });
+
+  resource.volume.setVolume(1.5);
 
   player.play(resource);
   connection.subscribe(player);
 
-  interaction.editReply('Говорю...');
-});
+  await interaction.editReply('Говорю...');
+  });
+
   }
   if (interaction.commandName === 'leave') {
     const connection = getVoiceConnection(interaction.guild.id);

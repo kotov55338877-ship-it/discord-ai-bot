@@ -56,8 +56,6 @@ client.on('interactionCreate', async interaction => {
 
   const player = createAudioPlayer();
 
-const player = createAudioPlayer();
-
 player.on('error', error => {
   console.log('Player error:', error);
 });
@@ -84,8 +82,8 @@ gtts.save(fileName, async (err) => {
 
   await interaction.editReply('Говорю...');
   });
+}
 
-  }
   if (interaction.commandName === 'leave') {
     const connection = getVoiceConnection(interaction.guild.id);
 
